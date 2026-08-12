@@ -1,14 +1,15 @@
-# Stage 1: Build JAR using Maven JDK 17
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-17 AS backend-build
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
+COPY . .
 RUN mvn clean package -DskipTests
 
-# Stage 2: Runtime image using Eclipse Temurin JRE 17 (Ubuntu/glibc)
+# Stage 2: Runtime
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=backend-build /app/backend/target/*.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-Xms128m", "-Xmx300m", "-XX:+UseG1GC", "-jar", "app.jar"]
+
+# Restrict Heap to 192M to leave headroom for ONNX C++ native memory
+ENTRYPOINT ["java", "-Xms64m", "-Xmx192m", "-XX:+UseSerialGC", "-jar", "app.jar"]

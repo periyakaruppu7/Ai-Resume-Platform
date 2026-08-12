@@ -23,4 +23,6 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=backend-build /app/backend/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Xms128m", "-Xmx300m", "-XX:+UseG1GC", "-jar", "app.jar"]
+
+# Restrict Heap to 192M to leave headroom for ONNX C++ native memory & prevent Render OOM killer
+ENTRYPOINT ["java", "-Xms64m", "-Xmx192m", "-XX:+UseSerialGC", "-jar", "app.jar"]
