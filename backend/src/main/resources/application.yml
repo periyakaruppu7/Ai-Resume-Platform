@@ -27,8 +27,17 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  # Spring AI configuration using Groq (OpenAI-compatible)
+  # Spring AI configuration
   ai:
+    model:
+      embedding: transformers
+    embedding:
+      transformer:
+        onnx:
+          # Pulls the ONNX model from HuggingFace CDN instead of raw GitHub
+          model-uri: https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx
+        tokenizer:
+          uri: https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json
     openai:
       base-url: https://api.groq.com/openai
       api-key: ${GROQ_API_KEY:gsk_your_groq_api_key_here}
