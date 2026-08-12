@@ -17,7 +17,10 @@ public class SpringAiConfig {
 
     @Bean
     public TransformersEmbeddingModel embeddingModel() {
-        return new TransformersEmbeddingModel();
+        TransformersEmbeddingModel model = new TransformersEmbeddingModel();
+        model.setModelResource("classpath:onnx/all-MiniLM-L6-v2/model.onnx");
+        model.setTokenizerResource("classpath:onnx/all-MiniLM-L6-v2/tokenizer.json");
+        return model;
     }
 
     @Bean
