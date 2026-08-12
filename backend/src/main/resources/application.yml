@@ -7,9 +7,9 @@ spring:
   application:
     name: ai-resume-matching-platform
   datasource:
-    url: jdbc:mysql://localhost:3306/ai_resume_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://airesumedb-prakashkaruppu7-55c5.f.aivencloud.com:10408/defaultdb?useSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:avnadmin}
+    password: ${DB_PASSWORD:your_aiven_password_here}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
