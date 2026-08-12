@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 1. MySQL Database Container
+  mysql-db:
+    image: mysql:8.0
+    container_name: ai_resume_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ai_resume_db
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:root}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 2. Spring Boot Backend Container
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai_resume_backend
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/ai_resume_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:root}
+      GROQ_API_KEY: ${GROQ_API_KEY:gsk_your_groq_api_key_here}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:demo-key-change-me}
+      JWT_SECRET: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  # 3. React Vite Frontend Container (Nginx)
+  frontend-ui:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai_resume_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-api
+
+volumes:
+  mysql_data:
