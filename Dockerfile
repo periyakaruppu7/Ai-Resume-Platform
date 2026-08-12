@@ -18,8 +18,8 @@ COPY backend/src ./src
 COPY --from=frontend-build /app/frontend/dist ./src/main/resources/static
 RUN mvn clean package -DskipTests
 
-# Stage 3: Production JRE 17 Runtime Image using Debian Slim for native glibc support
-FROM eclipse-temurin:17-jre-slim
+# Stage 3: Production JRE 17 Runtime Image using Ubuntu/glibc support
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=backend-build /app/backend/target/*.jar app.jar
 EXPOSE 8080
