@@ -18,10 +18,9 @@ COPY backend/src ./src
 COPY --from=frontend-build /app/frontend/dist ./src/main/resources/static
 RUN mvn clean package -DskipTests
 
-# Stage 3: Production JRE 17 Runtime Image with DJL ONNX native C++ library support
-FROM eclipse-temurin:17-jre-alpine
+# Stage 3: Production JRE 17 Runtime Image using Debian Slim for native glibc support
+FROM eclipse-temurin:17-jre-slim
 WORKDIR /app
-RUN apk add --no-cache gcompat libgcc libstdc++ libc6-compat
 COPY --from=backend-build /app/backend/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

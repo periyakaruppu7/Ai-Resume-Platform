@@ -6,8 +6,8 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Stage 2: Runtime image using Eclipse Temurin JRE 17
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Runtime image using Eclipse Temurin JRE 17 Slim (Debian glibc)
+FROM eclipse-temurin:17-jre-slim
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
